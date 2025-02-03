@@ -1,14 +1,32 @@
-import Image from "next/image"
-import React from "react"
-import Button from '../ui/button'
-import { AiFillGithub } from "react-icons/ai"
-import { FcGoogle } from "react-icons/fc"
+'use client'
 
-function Auth() {
-  return (
-    <>
-			{/* <RegisterModal />
-			<LoginModal /> */}
+import Image from 'next/image'
+import React, { useCallback } from 'react'
+import Button from '../ui/button'
+import { FcGoogle } from 'react-icons/fc'
+import { AiFillGithub } from 'react-icons/ai'
+import useRegisterModal from '../../hooks/useRegisterModal'
+import RegisterModal from '../modals/register-modal'
+import useLoginModal from '../../hooks/useLoginModal'
+import LoginModal from '../modals/login-modal'
+// import { signIn } from 'next-auth/react'
+
+ function Auth() {
+	const registerModal = useRegisterModal()
+	const loginModal = useLoginModal()
+
+	const onOpenRegisterModal = useCallback(() => {
+		registerModal.onOpen()
+	}, [registerModal])
+
+	const onOpenLoginModal = useCallback(() => {
+		loginModal.onOpen()
+	}, [loginModal])
+
+	return (
+		<>
+			<RegisterModal />
+			<LoginModal />
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-10 items-center h-screen'>
 				<Image src={'/images/x.svg'} alt='X' width={450} height={450} className='justify-self-center hidden md:block' />
 
@@ -21,7 +39,7 @@ function Auth() {
 						<h2 className='font-bold text-3xl mb-4'>Join today.</h2>
 						<div className='flex flex-col space-y-2'>
 							<Button
-								// onClick={() => signIn('google')}
+								onClick={() => signIn('google')}
 								label={
 									<div className='flex gap-2 items-center justify-center'>
 										<FcGoogle />
@@ -32,7 +50,7 @@ function Auth() {
 								secondary
 							/>
 							<Button
-								// onClick={() => signIn('github')}
+								onClick={() => signIn('github')}
 								label={
 									<div className='flex gap-2 items-center justify-center'>
 										<AiFillGithub />
@@ -47,7 +65,7 @@ function Auth() {
 								<p className='mx-4'>or</p>
 								<div className='h-px bg-gray-700 w-1/2' />
 							</div>
-							<Button label={'Create account'} fullWidth />
+							<Button label={'Create account'} fullWidth onClick={onOpenRegisterModal} />
 							<div className='text-[10px] text-gray-400'>
 								By signing up, you agree to the <span className='text-sky-500'>Terms of Service</span> and
 								<span className='text-sky-500'> Privacy Policy</span>, including
@@ -57,12 +75,12 @@ function Auth() {
 					</div>
 					<div className='w-full md:w-[60%]'>
 						<h3 className='font-medium text-xl mb-4'>Already have an account?</h3>
-						<Button label={'Sign in'} fullWidth outline/>
+						<Button label={'Sign in'} fullWidth outline onClick={onOpenLoginModal} />
 					</div>
 				</div>
 			</div>
 		</>
-  )
+	)
 }
 
 export default Auth
