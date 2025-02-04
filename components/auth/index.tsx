@@ -9,11 +9,14 @@ import useRegisterModal from '../../hooks/useRegisterModal'
 import RegisterModal from '../modals/register-modal'
 import useLoginModal from '../../hooks/useLoginModal'
 import LoginModal from '../modals/login-modal'
-// import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 
  function Auth() {
 	const registerModal = useRegisterModal()
 	const loginModal = useLoginModal()
+
+	const {data} = useSession();
+	console.log(data);
 
 	const onOpenRegisterModal = useCallback(() => {
 		registerModal.onOpen()
