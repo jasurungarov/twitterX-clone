@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import useLoginModal from '../../hooks/useLoginModal'
 import Modal from '../ui/modal';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
@@ -9,8 +9,13 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '../../lib/validation';
 import useRegisterModal from '../../hooks/useRegisterModal';
+import axios from 'axios';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 function LoginModal() {
+    const [error, setError] = useState("");
+
     const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
 
@@ -27,8 +32,19 @@ function LoginModal() {
        },
      });
 
-    function onSubmit(values: z.infer<typeof loginSchema>) {
-      console.log(values);
+    async function onSubmit(values: z.infer<typeof loginSchema>) {
+      try {
+        const {data} = await axios.post("/api/auth/login", values);
+        if (data.success) {
+          loginModal.onClose();
+        }
+      } catch (error) {
+        if (error.response.data.error) {
+          setError(error.response.data.error);
+        } else {
+          setError("Somesing went wrong. Please try again later.");
+        }
+      }
     }
   
     const { isSubmitting } = form.formState;
@@ -36,6 +52,13 @@ function LoginModal() {
      const bodyContent = (
 		<Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-12">
+          {error && (
+					<Alert variant='destructive'>
+						<AlertCircle className='h-4 w-4' />
+						<AlertTitle>Error</AlertTitle>
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
             <FormField
               control={form.control}
               name="email"
@@ -61,7 +84,7 @@ function LoginModal() {
               )}
             />
             <Button
-            label={"Register"}
+            label={"Login"}
             type="submit"
             secondary
             fullWidth
